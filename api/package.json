@@ -1,0 +1,1 @@
+{"name":"supplysphere-api","type":"module","scripts":{"start":"node index.js","test":"node --test"},"dependencies":{"express":"4.21.2","pg":"8.13.1","cors":"2.8.5","zod":"3.24.1"}}

@@ -1,0 +1,11 @@
+CREATE TABLE suppliers(id serial PRIMARY KEY,name text NOT NULL);
+CREATE TABLE items(id serial PRIMARY KEY,name text NOT NULL,stock integer NOT NULL DEFAULT 0 CHECK(stock>=0),reserved integer NOT NULL DEFAULT 0 CHECK(reserved>=0 AND reserved<=stock));
+CREATE TABLE purchases(id serial PRIMARY KEY,supplier_id int REFERENCES suppliers NOT NULL,item_id int REFERENCES items NOT NULL,qty int CHECK(qty>0) NOT NULL,received boolean DEFAULT false);
+CREATE TABLE bom(product_id int REFERENCES items,material_id int REFERENCES items,qty int NOT NULL CHECK(qty>0),PRIMARY KEY(product_id,material_id),CHECK(product_id<>material_id));
+CREATE TABLE orders(id serial PRIMARY KEY,product_id int REFERENCES items NOT NULL,qty int NOT NULL CHECK(qty>0),state text NOT NULL DEFAULT 'planned' CHECK(state IN ('planned','reserved','hold','released','dispatched','rejected')));
+CREATE TABLE reservations(order_id int REFERENCES orders,item_id int REFERENCES items,qty int NOT NULL CHECK(qty>0),PRIMARY KEY(order_id,item_id));
+CREATE TABLE ledger(id serial PRIMARY KEY,item_id int REFERENCES items,delta int NOT NULL,kind text NOT NULL,reference int NOT NULL,created_at timestamptz DEFAULT now(),UNIQUE(kind,reference,item_id));
+INSERT INTO suppliers(name) VALUES ('Demo Metals');
+INSERT INTO items(name) VALUES ('Steel'),('Finished bracket');
+INSERT INTO bom VALUES (2,1,3);
+INSERT INTO purchases(supplier_id,item_id,qty) VALUES (1,1,100);
